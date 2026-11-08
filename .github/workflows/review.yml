@@ -1,0 +1,58 @@
+name: Run opam-review on each PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Give the action permission to write comments to the PR
+permissions:
+  pull-requests: write
+
+jobs:
+  run-and-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Set up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-version: "5.5"
+
+      - name: Install opam-review
+        run: |
+          opam pin add -y opam-review https://github.com/hannesm/opam-review
+
+      # Execute your script and redirect its standard output to a file
+      - name: Execute script
+        run: |
+          opam exec -- opam-review > script_output.txt 2>&1
+
+      # Read the file and format it into an environment variable
+      - name: Load script output
+        id: load_output
+        run: |
+          echo "SCRIPT_RESULT<<EOF" >> $GITHUB_ENV
+          cat script_output.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      # Post the environment variable as a comment on the PR
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = process.env.SCRIPT_RESULT;
+            const body = `### 🤖 Script Execution Results
+            
+            \`\`\`text
+            ${output}
+            \`\`\``;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            })
