@@ -33,7 +33,7 @@ jobs:
         run: |
           MERGE_BASE=$(git rev-parse HEAD^2~$NUM_COMMITS)
           eval $(opam env)
-          opam-review --head $PR_HEAD --commit $MERGE_BASE
+          opam-review --head $PR_HEAD --commit $MERGE_BASE > script_output.txt 2>&1
 
       - name: Load opam-review output
         id: load_output
