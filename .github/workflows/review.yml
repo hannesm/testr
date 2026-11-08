@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up OCaml
         uses: ocaml/setup-ocaml@v3
@@ -25,9 +27,13 @@ jobs:
           opam pin add -y https://github.com/hannesm/opam-review.git
 
       - name: Execute opam-review
+        env:
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          NUM_COMMITS: ${{ github.event.pull_request.commits }}
         run: |
+          MERGE_BASE=$(git rev-parse HEAD^2~$NUM_COMMITS)
           eval $(opam env)
-          opam-review -vv
+          opam-review --head $PR_HEAD --commit $MERGE_BASE
 
       - name: Load opam-review output
         id: load_output
