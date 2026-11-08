@@ -9,7 +9,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  run-and-comment:
+  opam-review:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository code
@@ -24,13 +24,12 @@ jobs:
         run: |
           opam pin add -y https://github.com/hannesm/opam-review.git
 
-      # Execute your script and redirect its standard output to a file
-      - name: Execute script
+      - name: Execute opam-review
         run: |
-          opam exec -- opam-review -vv > script_output.txt 2>&1
+          eval $(opam env)
+          opam-review > script_output.txt 2>&1
 
-      # Read the file and format it into an environment variable
-      - name: Load script output
+      - name: Load opam-review output
         id: load_output
         run: |
           echo "SCRIPT_RESULT<<EOF" >> $GITHUB_ENV
