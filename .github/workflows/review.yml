@@ -22,7 +22,7 @@ jobs:
 
       - name: Install opam-review
         run: |
-          opam pin add -y opam-review https://github.com/hannesm/opam-review
+          opam pin add -y https://github.com/hannesm/opam-review.git
 
       # Execute your script and redirect its standard output to a file
       - name: Execute script
@@ -44,7 +44,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const output = process.env.SCRIPT_RESULT;
-            const body = `### 🤖 Script Execution Results
+            const body = `### 🤖 Opam Review Results
             
             \`\`\`text
             ${output}
