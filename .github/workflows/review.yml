@@ -27,7 +27,7 @@ jobs:
       # Execute your script and redirect its standard output to a file
       - name: Execute script
         run: |
-          opam exec -- opam-review > script_output.txt 2>&1
+          opam exec -- opam-review -vv > script_output.txt 2>&1
 
       # Read the file and format it into an environment variable
       - name: Load script output
