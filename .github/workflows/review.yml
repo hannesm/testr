@@ -27,7 +27,7 @@ jobs:
       - name: Execute opam-review
         run: |
           eval $(opam env)
-          opam-review > script_output.txt 2>&1
+          opam-review -vv
 
       - name: Load opam-review output
         id: load_output
